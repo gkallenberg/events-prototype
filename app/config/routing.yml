@@ -1,0 +1,7 @@
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+
+events_list:
+  path:       "/events"
+  defaults:   { _controller: AppBundle:SolrEvents:index }
