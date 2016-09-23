@@ -1,7 +1,6 @@
 <?php
 namespace AppBundle\Controller;
 
-use AppBundle\Form\EventsSearchType;
 use EightPoints\Bundle\GuzzleBundle\GuzzleBundle;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -10,6 +9,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\Request;
+use AppBundle\Entity\EventsSearch;
+use AppBundle\Form\EventsSearchType;
 
 /**
  * Class SolrEventsController
@@ -30,62 +31,14 @@ class SolrEventsController extends Controller
      */
     public function indexAction()
     {
-        $eventSearch = new EventsSearchType();
-        $date = new \DateTimeImmutable('now', new \DateTimeZone('America/New_York'));
-        $week = $date->add(new \DateInterval('P7D'));
-        $month = $date->add(new \DateInterval('P1M'));
+        /**
+         * @var EventsSearch
+         */
+        $eventSearch = new EventsSearch();
 
-        $form = $this->createFormBuilder($eventSearch)
-            ->add('category', ChoiceType::class, [
-                'label' => 'Show me',
-                'choices' => [
-                    'Everything' => 'all',
-                    'Author Talks & Gatherings' => '8171',
-                    'Career & Finance' => '8177',
-                    'Children & Family' => '8174',
-                    'Computers & Workshops' => '8175',
-                    'Exhibitions' => '8172',
-                    'Health & Fitness' => '8176',
-                    'Performing Arts & Films' => '8173',
-                    'Tours' => '8178',
-                ]
-            ])
-            ->add('location', ChoiceType::class, [
-                'label' => 'in',
-                'choices' => [
-                    'Everywhere' => 'all',
-                    'The Bronx' => 'Bronx',
-                    'Manhattan' => 'Manhattan',
-                    'Staten Island' => 'Staten+Island',
-                ]
-            ])
-            ->add('audience', ChoiceType::class, [
-                'label' => 'for',
-                'choices' => [
-                    'Everyone' => 'all',
-                    'Adults' => 'Adult',
-                    'Teens/Young Adults' => 'Young Adult',
-                    'Kids & Families' => 'Children',
-                ]
-            ])
-            ->add('date', ChoiceType::class, [
-                'label' => 'happening',
-                'choices' => [
-                    'Anytime' => 'all',
-                    'Today' => '[' . $date->format('Y-m-d') .'T00:00:00Z TO ' . $date->format('Y-m-d') .'T23:59:59Z]',
-                    'This Week' => '[' . $date->format('Y-m-d') .'T00:00:00Z TO '. $week->format('Y-m-d') .'T23:59:59Z]',
-                    'This Month' => '[' . $date->format('Y-m-d') .'T00:00:00Z TO '. $month->format('Y-m-d') .'T23:59:59Z]',
-                ],
-            ])
-//            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-//                $events = $event->getData();
-//                $form = $event->getForm();
-//            })
-            ->add('submit', SubmitType::class, ['label' => 'Search'])
-        ->getForm();
+        $form = $this->createForm(EventsSearchType::class, $eventSearch);
 
         $request = Request::createFromGlobals();
-//        $form->handleRequest($request);
 
         if ($request->isMethod('POST')) {
             $form->submit($request->request->get($form->getName()));
@@ -107,17 +60,17 @@ class SolrEventsController extends Controller
     }
 
     /**
-     * @param EventsSearchType $eventSearch
+     * @param EventsSearch $eventSearch
      * @return array
      */
-    public function listAction(EventsSearchType $eventSearch)
+    public function listAction(EventsSearch $eventSearch)
     {
         $params = [
             'category_id' => ($eventSearch->category != 'all') ? $eventSearch->category : '',
             'city' => ($eventSearch->location != 'all') ? $eventSearch->location : '',
             'target_audience' => ($eventSearch->audience != 'all') ? $eventSearch->audience : '',
-             'date_time_start' => ($eventSearch->date != 'all') ? $eventSearch->date : '[' . date('Y-m-d', time()) .'T00:00:00Z TO *]',
-//            'date_range_start' => '[2016-09-22]',
+            'date_time_start' => ($eventSearch->date != 'all') ? $eventSearch->date : '[' . date('Y-m-d', time()) .'T00:00:00Z TO *]',
+            'pub_status' => 1,
         ];
         $facetFields = [
             'category',
@@ -132,7 +85,7 @@ class SolrEventsController extends Controller
         }
 
         // Geo spatial filter
-//        array_push($fq, '{!geofilt sfield=geo}');
+        array_push($fq, '{!geofilt sfield=geo}');
         $myPos = '40.7528919,-73.9815126';
         $distance = '.5';
 
@@ -196,16 +149,40 @@ class SolrEventsController extends Controller
                 $timeString = ($dateTime->format('i') != '00') ? $dateTime->format(self::TIME_STRING_MIN) : $dateTime->format(self::TIME_STRING);
                 $dateString = ($today->format('Y-m-d') == $dateTime->format('Y-m-d')) ? 'Today'. $timeString : $dateTime->format(self::DATE_STRING) . $timeString;
                 $docs[$key]['date_time_start'] = $dateString;
-                if ($doc['event_type']  == 'Classes/Workshops') {
-                    $docs[$key]['icon'] = 'glyphicon-education';
-                } elseif ($doc['event_type']  == 'Story Times/Read Alouds') {
-                    $docs[$key]['icon'] = 'glyphicon-book';
-                } elseif ($doc['event_type']  == 'Film/Video Screenings') {
-                    $docs[$key]['icon'] = 'glyphicon-film';
-                } elseif ($doc['event_type']  == 'Special Events') {
-                    $docs[$key]['icon'] = 'glyphicon-sunglasses';
-                } else {
-                    $docs[$key]['icon'] = 'glyphicon-tag';
+                switch ($doc['category']) {
+                    case 'Author Talks & Conversations':
+                        $docs[$key]['icon'] = 'fa-microphone';
+                        $docs[$key]['icon_color'] = 'black';
+                        break;
+                    case 'Classes & Workshops':
+                        $docs[$key]['icon'] = 'fa-desktop';
+                        $docs[$key]['icon_color'] = 'gray';
+                        break;
+
+                    case 'Children & Family':
+                        $docs[$key]['icon'] = 'fa-child';
+                        $docs[$key]['icon_color'] = 'blue';
+                        break;
+
+                    case 'Performing Arts & Films':
+                        $docs[$key]['icon'] = 'fa-film';
+                        $docs[$key]['icon_color'] = 'black';
+                        break;
+
+                    case 'Career & Education':
+                        $docs[$key]['icon'] = 'fa-graducation-cap';
+                        $docs[$key]['icon_color'] = 'purple';
+                        break;
+
+                    case 'Exhibitions & Tours':
+                        $docs[$key]['icon'] = 'fa-compass';
+                        $docs[$key]['icon_color'] = 'gray';
+                        break;
+
+                    default:
+                        $docs[$key]['icon'] = 'fa-tag';
+                        $docs[$key]['icon_color'] = 'yellow';
+                        break;
                 }
             }
         }

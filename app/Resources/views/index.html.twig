@@ -21,7 +21,7 @@
             {% block form %}
                 {#, {'attr': {'class': 'form-inline'}}#}
                 {% form_theme form "bootstrap_3_horizontal_layout.html.twig" %}
-                {{ form_start(form, {"attr": {"id": "events-search-form"}}) }}
+                {{ form_start(form, {"attr": {"id": "events-search-form", "class": "navbar-form"}}) }}
                 <div class="container">
                     <div class="col-sm-3">
                         {{ form_label(form.category) }}
@@ -79,26 +79,34 @@
                     {#</tr>#}
                     {%  for item in list %}
                     <tr class="row">
-                        <td width="200"><span class="glyphicon glyphicon-calendar"></span> {{ item.date_time_start }}
-                            <div style="padding-top: 10px;" class="small">{{ item.target_audience }}</div>
-                            <div style="padding-top: 10px;" class="small">Ages: {{ item.age.0 }}</div>
+                        <td width="200"><span class="fa fa-calendar"></span> {{ item.date_time_start }}
+                            <div class="label small center-block" style="color: #7a43b6; padding: 10px;">{{ item.target_audience }}</div>
+                            <div class="label small center-block" style="color: #3e8f3e; padding: 10px;">Ages: {{ item.age.0 }}</div>
                         </td>
                         <td width="500">{{ item.title }}
                             {% if item.body is defined %}
                                 <div class="small">{{ item.body | truncate(200, true, '...') }}</div>
                             {% endif %}
                             {% if item.registration_method is defined %}
-                                <div class="small" style="padding-top: 10px;">
-                                    <span class="glyphicon glyphicon-pencil"></span>
-                                    <strong> Registration: {{ item.registration_method }}</strong>
+                                <div class="small" style="padding: 10px;">
+                                    <span class="fa fa-pencil"></span>
+                                    {% if item.registration_method == 'Online' %}
+                                        <button type="button" class="btn btn-default">
+                                            Register Now
+                                        </button>
+                                    {% else %}
+                                        <div>Registration: {{ item.registration_method }}</div>
+                                    {% endif %}
                                 </div>
                             {% endif %}
                         </td>
                         <td width="200">
-                            <span class="glyphicon glyphicon-map-marker"></span> {{ item.library_name }}
+                            <span class="fa fa-map-marker"></span> {{ item.library_name }}
+                            <div class="borough text-center small">[{{ item.city }}]</div>
+                            <div class="extra-data"><span style="color: #00b3ee;" class="fa fa-wheelchair"></span></div>
                         </td>
                         <td width="50" style="text-align: center;">
-                            <span style="font-size: 4em;" class="glyphicon {{ item.icon }}"></span>
+                            <span style="font-size: 4em; color: {{ item.icon_color }};" class="fa {{ item.icon }}"></span>
                             <div style="padding-top: 10px;" class="small">{{ item.event_type }}</div>
                         </td>
                     </tr>
