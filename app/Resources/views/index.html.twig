@@ -1,4 +1,4 @@
-{# app/Resources/views/events/list.html.twig #}
+{# app/Resources/views/index.html.twig #}
 {% extends "base.html.twig" %}
 
 {% block title %}{{ title }}{% endblock %}
@@ -19,19 +19,39 @@
         {#</div>#}
         <div class="event-search-form">
             {% block form %}
+                {#, {'attr': {'class': 'form-inline'}}#}
+                {% form_theme form "bootstrap_3_horizontal_layout.html.twig" %}
+                {{ form_start(form, {"attr": {"id": "events-search-form"}}) }}
                 <div class="container">
-                    {#, {'attr': {'class': 'form-inline'}}#}
-                    {% form_theme form "bootstrap_3_horizontal_layout.html.twig" %}
-                    {{ form_start(form, {"attr": {"id": "events-search-form"}}) }}
-                    <div class="col-sm-3">{{ form_widget(form.category) }}</div>
-                    <div class="col-sm-3">{{ form_widget(form.location) }}</div>
-                    <div class="col-sm-3">{{ form_widget(form.audience) }}</div>
-                    <div class="col-sm-3">{{ form_widget(form.date) }}</div>
-                    {{ form_end(form) }}
+                    <div class="col-sm-3">
+                        {{ form_label(form.category) }}
+                        {{ form_widget(form.category) }}
+                    </div>
+                    <div class="col-sm-3">
+                        {{ form_label(form.location) }}
+                        {{ form_widget(form.location) }}
+                    </div>
+                    <div class="col-sm-2">
+                        {{ form_label(form.audience) }}
+                        {{ form_widget(form.audience) }}
+                    </div>
+                    <div class="col-sm-2">
+                        {{ form_label(form.date) }}
+                        {{ form_widget(form.date) }}
+                    </div>
+                    <div class="col-sm-2">
+                        {{ form_label(form.submit, '') }}
+                        {{ form_widget(form.submit) }}
+                    </div>
                 </div>
+                {{ form_end(form) }}
             {% endblock %}
         </div>
-        <p>&nbsp;</p>
+        <p>
+            {#<div id="position-text"></div>#}
+            {#<div>Events near me:</div>#}
+        </p>
+        <div id="ajax-response"></div>
         <div class="container" id="events-list">
             <div class="col-md-3">
                 {% for key,facet in facets %}
@@ -39,9 +59,11 @@
                         <h4>{{ key | capitalize }}</h4>
                         <div class="list-group">
                         {%  for term in facet %}
-                            <button type="button" class="list-group-item list-group-item-action">
-                                {{ term.name }}<span class="label label-default pull-right">{{ term.count | number_format(0, '.', ',') }}</span>
-                            </button>
+                            {% if term.count > 0 %}
+                                <button type="button" class="list-group-item list-group-item-action">
+                                    {{ term.name }}<span class="label label-default pull-right">{{ term.count | number_format(0, '.', ',') }}</span>
+                                </button>
+                            {% endif %}
                         {% endfor %}
                         </div>
                     </div>

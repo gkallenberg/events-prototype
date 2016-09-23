@@ -7,3 +7,8 @@ services:
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    text.twig_extension:
+        class: Twig_Extensions_Extension_Text
+        public: false
+        tags:
+            - { name: twig.extension }

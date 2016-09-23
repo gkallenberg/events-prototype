@@ -72,7 +72,7 @@ guzzle:
   clients:
     solr:
 #      base_url: "https://solr.prod.aws.nypl.org"
-      base_url: "localhost:8983"
+      base_url: "https://localhost:8984"
       headers:
         Accept: "application/json"
 #      options:

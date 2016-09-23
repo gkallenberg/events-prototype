@@ -1,40 +1,40 @@
-function postForm( $form, callback ){
+var Coordinates = {
+    posText: 'New York City',
 
-    /*
-     * Get all form values
-     */
-    var values = {};
-    $.each( $form.serializeArray(), function(i, field) {
-        values[field.name] = field.value;
-    });
+    isPositionSet: false,
+      position: {},
 
-    /*
-     * Throw the form values to the server!
-     */
-    $.ajax({
-        type        : $form.attr( 'method' ),
-        url         : $form.attr( 'action' ),
-        data        : values,
-        success     : function(data) {
-            callback( data );
-        }
-    });
+    setPosition: function(position)
+    {
+      if (position) {
+          Coordinates.isPositionSet = true;
+          Coordinates.position = position;
+          Coordinates.posText = Coordinates.position.coords.latitude + ', ' + Coordinates.position.coords.longitude;
+          console.log(Coordinates.posText);
+      }
+    },
 
+    showPosition: function()
+    {
+        $('#position-text').text(Coordinates.posText);
+    }
 }
 
 $(document).ready(function(){
+    $('#form_category').change(function() {
+        var selected = $(this).val();
+        console.log(selected);
+    })
+    navigator.geolocation.getCurrentPosition(Coordinates.setPosition, Coordinates.showPosition);
 
-    var forms = [
-        '[ name="{{ postform.vars.full_name }}"]'
-    ];
-
-    $( forms.join(',') ).submit( function( e ){
-        e.preventDefault();
-
-        postForm( $(this), function( response ){
-        });
-
-        return false;
+    $.ajax({
+        'url': 'https://localhost:8984/solr/events/select',
+        'data': {'wt':'json', 'q':'*:*'},
+        'success': function(data) {
+            /* process e.g. data.response.docs... */
+            console.log(data.response.numFound);
+        },
+        'dataType': 'jsonp',
+        'jsonp': 'json.wrf',
     });
-
 });

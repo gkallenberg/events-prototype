@@ -3,5 +3,5 @@ app:
     type:     annotation
 
 events_list:
-  path:       "/events"
+  path:       "/"
   defaults:   { _controller: AppBundle:SolrEvents:index }
