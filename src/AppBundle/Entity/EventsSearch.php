@@ -9,6 +9,11 @@ class EventsSearch
     public $keyword = '';
 
     /**
+     * @var bool
+     */
+    public $nearby = false;
+
+    /**
      * @var string
      */
     public $category = '';
@@ -29,6 +34,16 @@ class EventsSearch
     public $date = '';
 
     /**
+     * @var integer
+     */
+    public $start = 0;
+
+    /**
+     * @var integer
+     */
+    public $rows = 20;
+
+    /**
      * @param string $keyword
      */
     public function setKeyword($keyword)
@@ -42,6 +57,22 @@ class EventsSearch
     public function getKeyword()
     {
         return $this->keyword;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isNearby()
+    {
+        return $this->nearby;
+    }
+
+    /**
+     * @param boolean $nearby
+     */
+    public function setNearby($nearby)
+    {
+        $this->nearby = $nearby;
     }
 
     /**
@@ -106,6 +137,38 @@ class EventsSearch
     public function setDate($date)
     {
         $this->date = $date;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStart()
+    {
+        return $this->start;
+    }
+
+    /**
+     * @param int $start
+     */
+    public function setStart($start)
+    {
+        $this->start = $start;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRows()
+    {
+        return $this->rows;
+    }
+
+    /**
+     * @param mixed $rows
+     */
+    public function setRows($rows)
+    {
+        $this->rows = $rows;
     }
 
 }

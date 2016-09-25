@@ -1,0 +1,43 @@
+#events-list {
+    margin: .5em 0;
+}
+
+.local-assets {
+    font-size: 1em;
+    color: #ffffdd;
+    background-color: #404040;
+}
+
+.date-time {
+    padding: 5px;
+}
+
+.library {
+    padding: 5px;
+}
+
+.adult {
+    margin-top: 20px;
+    padding: 5px;
+    background-color: #a0a080;
+}
+
+.young-adult {
+    margin-top: 20px;
+    padding: 5px;
+    background-color: #629755;
+}
+
+.children {
+    margin-top: 20px;
+    padding: 5px;
+    background-color: #5bc0de;
+}
+
+.event-action {
+    padding: 10px;
+}
+
+.extra-data {
+    padding: 5px;
+}

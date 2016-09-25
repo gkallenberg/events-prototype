@@ -2,8 +2,11 @@
 namespace AppBundle\Form;
 
 use AppBundle\Form\EventListener\EventsSearchListener;
+use Symfony\Component\DependencyInjection\Tests\Compiler\H;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -23,18 +26,22 @@ class EventsSearchType extends AbstractType
         $month = $date->add(new \DateInterval('P1M'));
 
         $builder
+            ->add('nearby', CheckboxType::class, [
+                'label' => 'Nearby',
+                'label_attr' => ['class' => 'form-check-label'],
+                'required' => false,
+            ])
             ->add('category', ChoiceType::class, [
                 'label' => 'Show me',
                 'choices' => [
                     'Everything' => 'all',
-                    'Author Talks & Gatherings' => '8171',
-                    'Career & Finance' => '8177',
+                    'Author Talks & Conversations' => '8171',
+                    'Busineess & Finance' => '8176',
+                    'Career & Education' => '8177',
                     'Children & Family' => '8174',
                     'Computers & Workshops' => '8175',
-                    'Exhibitions' => '8172',
-                    'Health & Fitness' => '8176',
+                    'Exhibitions & Tours' => '8172',
                     'Performing Arts & Films' => '8173',
-                    'Tours' => '8178',
                 ]
             ])
             ->add('location', ChoiceType::class, [
@@ -49,7 +56,7 @@ class EventsSearchType extends AbstractType
             ->add('audience', ChoiceType::class, [
                 'label' => 'for',
                 'choices' => [
-                    'Everyone' => 'all',
+                    'For Everyone' => 'all',
                     'Adults' => 'Adult',
                     'Teens/Young Adults' => 'Young Adult',
                     'Kids & Families' => 'Children',
@@ -58,12 +65,14 @@ class EventsSearchType extends AbstractType
             ->add('date', ChoiceType::class, [
                 'label' => 'happening',
                 'choices' => [
-                    'Anytime' => 'all',
+                    'At Anytime' => 'all',
                     'Today' => '[' . $date->format('Y-m-d') .'T00:00:00Z TO ' . $date->format('Y-m-d') .'T23:59:59Z]',
                     'This Week' => '[' . $date->format('Y-m-d') .'T00:00:00Z TO '. $week->format('Y-m-d') .'T23:59:59Z]',
                     'This Month' => '[' . $date->format('Y-m-d') .'T00:00:00Z TO '. $month->format('Y-m-d') .'T23:59:59Z]',
                 ],
             ])
+            ->add('start', HiddenType::class)
+            ->add('rows', HiddenType::class)
             ->add('submit', SubmitType::class, ['label' => 'Search'])
             ->addEventListener(FormEvents::POST_SUBMIT, [$this, 'onPostSubmit'])
         ;

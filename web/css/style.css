@@ -343,7 +343,7 @@ html, body, .gridContainer {
 
 /* IE7 */
 input, textarea {
-  -webkit-appearance: none;
+  /*-webkit-appearance: none;*/
   -webkit-border-radius: 0; }
 
 body {

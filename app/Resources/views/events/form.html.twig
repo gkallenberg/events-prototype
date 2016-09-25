@@ -1,9 +1,45 @@
 {# app/Resources/views/events/form.html.twig #}
 
-{% use "bootstrap_3_horizontal_layout.html.twig" %}
-
-{% block form %}
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
+{% block events_search_form %}
+    <div class="form-container">
+        <div class="event-search-form">
+            {% block form %}
+                {#, {'attr': {'class': 'form-inline'}}#}
+                {% form_theme form "bootstrap_3_horizontal_layout.html.twig" %}
+                {{ form_start(form, {"attr": {"id": "events-search-form"}}) }}
+                <div class="form-group">
+                    <div class="col-sm-1 col-xs-2">
+                        {#<div class="form-check checkbox-inline">#}
+                            {#<label class="form-check-label">#}
+                                {#<input class="form-check-input" type="checkbox" value="">#}
+                                {#Near by#}
+                            {#</label>#}
+                        {{ form_widget(form.nearby) }}
+                        {#</div>#}
+                    </div>
+                    <div class="col-sm-2">
+                        {#{{ form_label(form.category) }}#}
+                        {{ form_widget(form.category) }}
+                    </div>
+                    <div class="col-sm-3">
+                        {#{{ form_label(form.location) }}#}
+                        {{ form_widget(form.location) }}
+                    </div>
+                    <div class="col-sm-2">
+                        {#{{ form_label(form.audience) }}#}
+                        {{ form_widget(form.audience) }}
+                    </div>
+                    <div class="col-sm-2">
+                        {#{{ form_label(form.date) }}#}
+                        {{ form_widget(form.date) }}
+                    </div>
+                    <div class="col-sm-2">
+                        {#{{ form_label(form.submit, '') }}#}
+                        {{ form_widget(form.submit) }}
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            {% endblock %}
+        </div>
+    </div>
 {% endblock %}

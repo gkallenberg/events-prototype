@@ -1,0 +1,61 @@
+{# app/Resources/views/events/features.html.twig #}
+
+{% block events_features %}
+    <div class="features">
+        <div class="row">
+            {% if features != null %}
+                {% for feature in features %}
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="thumbnail" style="height: 9em; vertical-align: middle;">
+                            <a href="#">
+                                <img class="pull-left" style="padding-right: 10px;" width="45%" height="30%" src="{{ attribute(feature.attributes, 'image-uri') }}" alt=""/>
+                            </a>
+                            <div class="caption small">
+                                <a href="{{ feature.attributes.url }}">
+                                    <div class="media-heading">{{ feature.attributes.title.en.text }}</div>
+                                </a>
+                                <p>
+                                    <span class="text-uppercase">{{ feature.attributes.date.en.text }}</span>
+                                    <br/>
+                                    {{ feature.attributes.location }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {#<div class="col-xs-6 col-sm-4">#}
+                {#<div class="thumbnail" style="height: 8em; vertical-align: middle">#}
+                        {#<a href="#">#}
+                            {#<img class="pull-left media-middle" style="padding-right: 10px;" width="40%" height="25%" src="https://www.nypl.org/sites/default/files/styles/extralarge/public/MonaEltahawy_CREDIT_Robert%20Rutledge.jpg" alt=""/>#}
+                        {#</a>#}
+                        {#<div class="caption small">#}
+                            {#<a href="https://www.nypl.org/events/programs/2016/10/05/mona-eltahawy?nref=56896">#}
+                                {#<div class="media-heading">LIVE from the NYPL<br/>Mona Eltahawy | Yasmine El Rashidi</div>#}
+                            {#</a>#}
+                            {#<p>#}
+                                {#WED, OCT 5 | 7 PM<br/>#}
+                                {#Schwarzman Building#}
+                            {#</p>#}
+                        {#</div>#}
+                {#</div>#}
+            {#</div>#}
+            {#<div class="col-xs-6 col-sm-4">#}
+                {#<div class="thumbnail" style="height: 8em; vertical-align: middle">#}
+                        {#<a href="#">#}
+                            {#<img class="pull-left media-middle" style="padding-right: 10px;" width="40%" height="25%" src="https://www.nypl.org/sites/default/files/styles/extralarge/public/rafaelhernandezBLC.jpg" alt=""/>#}
+                        {#</a>#}
+                        {#<div class="caption small">#}
+                            {#<a href="https://www.nypl.org/events/programs/2016/10/09/rafael-hernandez-film-festival">#}
+                                {#<div class="media-heading">Rafael Hernandez Music Festival</div>#}
+                            {#</a>#}
+                            {#<p>#}
+                                {#SUN, OCT 9 | 2 PM<br/>#}
+                                {#Bronx Library Center#}
+                            {#</p>#}
+                        {#</div>#}
+                {#</div>#}
+            {#</div>#}
+        </div>
+    </div>
+{% endblock %}

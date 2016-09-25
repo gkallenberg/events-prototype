@@ -1,11 +1,31 @@
 {# app/Resources/views/index.html.twig #}
+
+{% use "page/left.html.twig" %}
+{% use "page/right.html.twig" %}
+{% use "page/footer.html.twig" %}
+{% use "events/form.html.twig" %}
+{% use "events/results.html.twig" %}
+{% use "events/features.html.twig" %}
+
 {% extends "base.html.twig" %}
 
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-    <div id="main" style="margin: 0 20px;">
-        <h1>{{ header }}</h1>
+    {% block header %}
+        <script async src="https://header.nypl.org/dgx-header.min.js" type="application/javascript"></script>
+    {% endblock %}
+
+    {{ block('left') }}
+    {{ block('right') }}
+
+    {% block main %}
+    <div id="main">
+        <div class="title" style="margin: 1em;">
+            <div class="sectionTitle">
+                {{ page_title }}
+            </div>
+        </div>
         {#<div class="container" style="margin-bottom: 10px;">#}
             {#<div class="col-lg-4">#}
                 {#<a class="link" href="https://www.nypl.org/events/programs/2016/09/20/nicholson-baker?nref=56896">#}
@@ -17,102 +37,17 @@
                 {#<p>Schwarzman Building</p>#}
             {#</div>#}
         {#</div>#}
-        <div class="event-search-form">
-            {% block form %}
-                {#, {'attr': {'class': 'form-inline'}}#}
-                {% form_theme form "bootstrap_3_horizontal_layout.html.twig" %}
-                {{ form_start(form, {"attr": {"id": "events-search-form", "class": "navbar-form"}}) }}
-                <div class="container">
-                    <div class="col-sm-3">
-                        {{ form_label(form.category) }}
-                        {{ form_widget(form.category) }}
-                    </div>
-                    <div class="col-sm-3">
-                        {{ form_label(form.location) }}
-                        {{ form_widget(form.location) }}
-                    </div>
-                    <div class="col-sm-2">
-                        {{ form_label(form.audience) }}
-                        {{ form_widget(form.audience) }}
-                    </div>
-                    <div class="col-sm-2">
-                        {{ form_label(form.date) }}
-                        {{ form_widget(form.date) }}
-                    </div>
-                    <div class="col-sm-2">
-                        {{ form_label(form.submit, '') }}
-                        {{ form_widget(form.submit) }}
-                    </div>
-                </div>
-                {{ form_end(form) }}
-            {% endblock %}
-        </div>
-        <p>
-            {#<div id="position-text"></div>#}
-            {#<div>Events near me:</div>#}
-        </p>
-        <div id="ajax-response"></div>
-        <div class="container" id="events-list">
-            <div class="col-md-3">
-                {% for key,facet in facets %}
-                    <div class="facet" style="padding-bottom: 10px;">
-                        <h4>{{ key | capitalize }}</h4>
-                        <div class="list-group">
-                        {%  for term in facet %}
-                            {% if term.count > 0 %}
-                                <button type="button" class="list-group-item list-group-item-action">
-                                    {{ term.name }}<span class="label label-default pull-right">{{ term.count | number_format(0, '.', ',') }}</span>
-                                </button>
-                            {% endif %}
-                        {% endfor %}
-                        </div>
-                    </div>
-                {%  endfor %}
-            </div>
-            <div class="col-md-9">
-                <table class="table table-striped">
-                    {#<tr class="row">#}
-                        {#<th>When</th>#}
-                        {#<th>What</th>#}
-                        {#<th>Where</th>#}
-                        {#<th>&nbsp;</th>#}
-                    {#</tr>#}
-                    {%  for item in list %}
-                    <tr class="row">
-                        <td width="200"><span class="fa fa-calendar"></span> {{ item.date_time_start }}
-                            <div class="label small center-block" style="color: #7a43b6; padding: 10px;">{{ item.target_audience }}</div>
-                            <div class="label small center-block" style="color: #3e8f3e; padding: 10px;">Ages: {{ item.age.0 }}</div>
-                        </td>
-                        <td width="500">{{ item.title }}
-                            {% if item.body is defined %}
-                                <div class="small">{{ item.body | truncate(200, true, '...') }}</div>
-                            {% endif %}
-                            {% if item.registration_method is defined %}
-                                <div class="small" style="padding: 10px;">
-                                    <span class="fa fa-pencil"></span>
-                                    {% if item.registration_method == 'Online' %}
-                                        <button type="button" class="btn btn-default">
-                                            Register Now
-                                        </button>
-                                    {% else %}
-                                        <div>Registration: {{ item.registration_method }}</div>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        </td>
-                        <td width="200">
-                            <span class="fa fa-map-marker"></span> {{ item.library_name }}
-                            <div class="borough text-center small">[{{ item.city }}]</div>
-                            <div class="extra-data"><span style="color: #00b3ee;" class="fa fa-wheelchair"></span></div>
-                        </td>
-                        <td width="50" style="text-align: center;">
-                            <span style="font-size: 4em; color: {{ item.icon_color }};" class="fa {{ item.icon }}"></span>
-                            <div style="padding-top: 10px;" class="small">{{ item.event_type }}</div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
+        {{ block('events_features') }}
+        <div class="title" style="margin: 0 1em;">
+            <div class="sectionTitle">
+                <h4>What Else Is Happening</h4>
             </div>
         </div>
+        {{ block('events_search_form') }}
+        {{ block('events_results') }}
+
     </div>
+    {% endblock %}
+
+    {{ block('footer') }}
 {% endblock %}

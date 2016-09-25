@@ -1,0 +1,27 @@
+#main {
+    padding: 0 20px;
+}
+
+.features {
+    margin: 0 1em;
+}
+
+.svgIconList {
+    padding: 0;
+    stroke: transparent;
+    fill: #7b7b7b;
+    opacity: .8;
+    height: 64px;
+    width: 64px;
+    /*margin: 0 10px 0 0;*/
+    /*float: left;*/
+}
+
+svg:not(:root) {
+    overflow: hidden;
+}
+
+.thumbnail img {
+    padding-top: 15px;
+    display: block;
+}

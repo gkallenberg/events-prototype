@@ -79,3 +79,9 @@ guzzle:
 #        auth:
         timeout: 30
         verify: false
+
+    refinery:
+#      base_url: "https://refinery.nypl.org"
+      base_url: "http://refinery.tld"
+      headers:
+        Accept: "application/json"
