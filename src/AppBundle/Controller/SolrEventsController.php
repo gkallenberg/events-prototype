@@ -5,10 +5,6 @@ use EightPoints\Bundle\GuzzleBundle\GuzzleBundle;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\EventsSearch;
 use AppBundle\Form\EventsSearchType;
@@ -22,7 +18,7 @@ class SolrEventsController extends Controller
 
     const LOCAL_SOLR = '/solr/events';
     const REMOTE_SOLR = '/solr/solrevents';
-    const REFINERY_API = '/api/nypl/v0.1';
+    const REFINERY_API = '/api/nypl/ndo/v0.1';
     const DATE_STRING = 'M d';
     const TIME_STRING = ' @ g a';
     const TIME_STRING_MIN = ' @ g:i a';
@@ -53,15 +49,15 @@ class SolrEventsController extends Controller
         $results = $this->listAction($eventSearch);
 
 //        $features = $this->getFeatures();
-        $features = [];
 
         return $this->render('index.html.twig', [
             'title' => 'What\'s Happening @ NYPL',
             'page_title' => 'What\'s Happening',
-            'features' => (!empty($features)) ? $features : null,
+            'features' => (isset($features)) ? $features : null,
             'form' => $form->createView(),
             'list' => (!empty($results['list'])) ? $results['list'] : null,
             'facets' => (!empty($results['items'])) ? $results['items'] : null,
+            'pages' => $results['pages'],
         ]);
     }
 
@@ -71,10 +67,21 @@ class SolrEventsController extends Controller
      */
     public function listAction(EventsSearch $eventSearch)
     {
+        $location = $eventSearch->location;
+        $audience = $eventSearch->audience;
+
+        if ($location == 'Staten Island') {
+            $location = '"' . $location . '"';
+        }
+
+        if ($audience == 'Young Adult') {
+            $audience = '"' . $audience . '"';
+        }
+
         $params = [
             'category_id' => ($eventSearch->category != 'all') ? $eventSearch->category : '',
-            'city' => ($eventSearch->location != 'all') ? $eventSearch->location : '',
-            'target_audience' => ($eventSearch->audience != 'all') ? $eventSearch->audience : '',
+            'city' => ($location != 'all') ? $location : '',
+            'target_audience' => ($audience != 'all') ? $audience : '',
             'date_time_start' => ($eventSearch->date != 'all') ? $eventSearch->date : '[' . date('Y-m-d', time()) .'T00:00:00Z TO *]',
             'pub_status' => 1,
         ];
@@ -94,22 +101,19 @@ class SolrEventsController extends Controller
         if ($eventSearch->nearby) {
             array_push($fq, '{!geofilt sfield=geo}');
         }
-//        array_push($fq, '{!geofilt sfield=geo}');
         $myPos = '40.7528919,-73.9815126';
-        $distance = '.5';
+        $distance = $eventSearch->distance;
+        $start = $eventSearch->start;
+        $rows = $eventSearch->rows;
 
-        /**
-         * @var GuzzleBundle
-         */
-        $client = $this->get('guzzle.client.solr');
         $query = [
             'params' => [
                 'q' => '*:*',
                 'facet' => 'true',
                 'facet.field' => $facetFields,
                 'sort' => 'date_time_start asc',
-                'rows' => 10,
-                'start' => 0,
+                'rows' => $rows,
+                'start' => $start,
                 'wt' => 'json',
                 'pt' => $myPos,
                 'd' => $distance,
@@ -120,15 +124,11 @@ class SolrEventsController extends Controller
             $query['filter'] = $fq;
         }
 
-//        var_dump(json_encode($query));
-
-        $response = $client->post(self::LOCAL_SOLR . '/query', [
-            'headers' => [ 'Content-Type' => 'application/json' ],
-            'json' => $query
-        ]);
+        $response = $this->retrieveDocs($query);
 
         $items = [];
-        $list = [];
+        $docs = [];
+        $pages = 0;
         $icons = [
             'Author Talks & Conversations' => 'microphone',
             'Business & Finance' => 'line-chart',
@@ -141,7 +141,9 @@ class SolrEventsController extends Controller
 
         if ($response->getStatusCode() == '200') {
             $list = json_decode($response->getBody(), true);
-            if ($list['response']['numFound'] > 0) {
+            $total = $list['response']['numFound'];
+            $pages = ['page' => $start, 'total' => floor($total / $rows)];
+            if ($total > 0) {
                 foreach ($facetFields as $facetField) {
                     $facets = $list['facet_counts']['facet_fields'][$facetField];
                     $facetField = ($facetField == 'city') ? 'location' : $facetField;
@@ -155,19 +157,42 @@ class SolrEventsController extends Controller
                     }
                 }
             }
+            $docs = $this->processDocs($list['response']['docs']);
         }
 
-        $docs = $this->processDocs($list['response']['docs']);
-
-        return ['list' => $docs, 'items' => $items];
+        return ['list' => $docs, 'items' => $items, 'pages' => $pages];
     }
 
+    /**
+     * @param array $query
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function retrieveDocs(array $query)
+    {
+        /**
+         * @var GuzzleBundle
+         */
+        $client = $this->get('guzzle.client.solr');
+
+        $response = $client->post(self::LOCAL_SOLR . '/query', [
+            'headers' => [ 'Content-Type' => 'application/json' ],
+            'json' => $query
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * @param $docs
+     * @return array
+     */
     public function processDocs(&$docs)
     {
         if (is_array($docs)) {
             foreach ($docs as $key => $doc) {
                 $today = new \DateTime('now', new \DateTimeZone('America/New_York'));
-                $dateTime = new \DateTime($doc['date_time_start'], new \DateTimeZone('America/New_York'));
+                $dateTime = new \DateTime($doc['date_time_start']);
+                $dateTime->setTimezone(new \DateTimeZone('America/New_York'));
                 $timeString = ($dateTime->format('i') != '00') ? $dateTime->format(self::TIME_STRING_MIN) : $dateTime->format(self::TIME_STRING);
                 $dateString = ($today->format('Y-m-d') == $dateTime->format('Y-m-d')) ? 'Today'. $timeString : $dateTime->format(self::DATE_STRING) . $timeString;
                 $docs[$key]['date_time_start'] = $dateString;
@@ -218,12 +243,15 @@ class SolrEventsController extends Controller
         return $docs;
     }
 
+    /**
+     * @return array|string
+     */
     public function getFeatures()
     {
         /**
          * var array
          */
-        $features = [];
+        static $features = [];
 
         try {
             /**
@@ -234,34 +262,22 @@ class SolrEventsController extends Controller
             $response = $client->get(self::REFINERY_API . '/site-data/containers', [
                 'query' => [
                     'filter[slug]' => 'whats-happening',
-                    'include' => 'slots.current-item.rectangular-image.full-uri,children.slots.current-item,slots.current-item',
+                    'include' => 'children.slots.current-item,slots.current-item',
                 ]
             ]);
+
             if ($response->getStatusCode() == '200') {
                 $containers = json_decode($response->getBody());
 
-                $features = [
-                    'one' => $containers->included[0],
-                    'two' => $containers->included[9],
-                    'three' => $containers->included[18],
-                ];
-
-                foreach ($features as $feature) {
-                    $id = $feature->id;
-                    $image = $client->get(self::REFINERY_API . '/site-data/scheduled-featured-items/'. $id .'/relationships/rectangular-image');
-                    $imageUrl = json_decode($image->getBody());
-                    $imageFullUrl = $imageUrl->data->attributes->uri->{'full-uri'};
-                    $feature->attributes->{'image-uri'} = $imageFullUrl;
+                foreach ($containers->included as $container) {
+                    if ($container->type == 'scheduled-featured-item') {
+                        $features[] = $container;
+                    }
                 }
-            }
-
-            if ($response->getStatusCode() == '200') {
-                $containers = json_decode($response->getBody());
-
+//                shuffle($featuredItems);
+//                $features = array_slice($features, 0, 3);
                 $features = [
-                    'one' => $containers->included[0],
-                    'two' => $containers->included[9],
-                    'three' => $containers->included[18],
+                    $features[0], $features[4], $features[8]
                 ];
 
                 foreach ($features as $feature) {
@@ -277,5 +293,32 @@ class SolrEventsController extends Controller
         }
 
         return $features;
+    }
+
+    /**
+     * Matches /event/*
+     * @Route("/event/{ident}", name="event_display")
+     *
+     * @return array
+     */
+    public function eventAction($ident)
+    {
+        $query = [
+            'params' => [
+                'q' => '*:*',
+                'event_id' => $ident,
+                'wt' => 'json',
+            ]
+        ];
+        $response = $this->retrieveDocs($query);
+
+        $data = json_decode($response->getBody(), true);
+        $doc = $data['response']['docs'];
+
+        return $this->render('events/event.html.twig', [
+            'title' => 'Event',
+            'page_title' => 'Event',
+            'event' => $doc,
+        ]);
     }
 }

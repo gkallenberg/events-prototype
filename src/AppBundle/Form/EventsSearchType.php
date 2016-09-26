@@ -50,7 +50,7 @@ class EventsSearchType extends AbstractType
                     'Everywhere' => 'all',
                     'The Bronx' => 'Bronx',
                     'Manhattan' => 'Manhattan',
-                    'Staten Island' => 'Staten+Island',
+                    'Staten Island' => 'Staten Island',
                 ]
             ])
             ->add('audience', ChoiceType::class, [
@@ -58,8 +58,8 @@ class EventsSearchType extends AbstractType
                 'choices' => [
                     'For Everyone' => 'all',
                     'Adults' => 'Adult',
-                    'Teens/Young Adults' => 'Young Adult',
                     'Kids & Families' => 'Children',
+                    'Teens/Young Adults' => 'Young Adult',
                 ]
             ])
             ->add('date', ChoiceType::class, [

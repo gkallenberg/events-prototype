@@ -6,11 +6,11 @@
             {% if features != null %}
                 {% for feature in features %}
                     <div class="col-xs-12 col-sm-4">
-                        <div class="thumbnail" style="height: 9em; vertical-align: middle;">
+                        <div class="thumbnail">
                             <a href="#">
-                                <img class="pull-left" style="padding-right: 10px;" width="45%" height="30%" src="{{ attribute(feature.attributes, 'image-uri') }}" alt=""/>
+                                <img style="padding-right: 10px;" src="{{ attribute(feature.attributes, 'image-uri') }}" alt=""/>
                             </a>
-                            <div class="caption small">
+                            <div class="caption">
                                 <a href="{{ feature.attributes.url }}">
                                     <div class="media-heading">{{ feature.attributes.title.en.text }}</div>
                                 </a>
@@ -56,6 +56,11 @@
                         {#</div>#}
                 {#</div>#}
             {#</div>#}
+        </div>
+    </div>
+    <div class="title" style="margin: 0 1em;">
+        <div class="sectionTitle">
+            <h4>What Else Is Happening</h4>
         </div>
     </div>
 {% endblock %}

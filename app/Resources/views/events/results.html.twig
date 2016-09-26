@@ -18,8 +18,8 @@
                                     <button type="button" class="list-group-item list-group-item-action">
                                         <span class="fa fa-{{ term.icon }}"></span> {{ term.name }}
                                         <span class="label label-default pull-right text-justify">
-                                                    {{ term.count | number_format(0, '.', ',') }}
-                                                </span>
+                                            {{ term.count | number_format(0, '.', ',') }}
+                                        </span>
                                     </button>
                                 {% endif %}
                             {% endfor %}
@@ -60,11 +60,12 @@
                             </div>
                             <div class="extra-data">
                                 {% if item.access is defined %}
-                                    <span class="btn btn-default local-assets fa fa-wheelchair"></span>
+                                    <span class="btn btn-default local-assets fa fa-wheelchair" title="Wheelchair accessible"></span>
                                 {% endif %}
                                 {% if item.listening_device is defined %}
-                                    <span class="btn btn-default local-assets fa fa-assistive-listening-systems"></span>
+                                    <span class="btn btn-default local-assets fa fa-assistive-listening-systems" title="Assitive listening device available"></span>
                                 {% endif %}
+                                <span class="btn btn-default local-assets fa fa-wifi" title="WiFi available"></span>
                             </div>
                             <div class="label small center-block bottom {{ item.target_audience | replace(' ', '-') | lower }}">
                                 {{ item.target_audience }}
@@ -130,6 +131,29 @@
                     </tr>
                 {% endfor %}
             </table>
+        </div>
+        <div class="text-center">
+            {% if pages.total != 0 %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li{% if pages.page == 0 %} class="disabled"{% endif %}>
+                        <a href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% for i in 1..pages.total %}
+                        {% if i < 10 %}
+                            <li {% if pages.page == i-1 %}class="active"{% endif %}><a href="#">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li>
+                        <a href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

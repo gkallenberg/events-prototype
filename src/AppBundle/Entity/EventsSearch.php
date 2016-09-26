@@ -44,6 +44,16 @@ class EventsSearch
     public $rows = 20;
 
     /**
+     * @var string
+     */
+    public $distance = '.5';
+
+    public function __construct()
+    {
+        $this->setDate('[' . date('Y-m-d', time()) .'T00:00:00Z TO *]');
+    }
+
+    /**
      * @param string $keyword
      */
     public function setKeyword($keyword)
@@ -169,6 +179,22 @@ class EventsSearch
     public function setRows($rows)
     {
         $this->rows = $rows;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDistance()
+    {
+        return $this->distance;
+    }
+
+    /**
+     * @param string $distance
+     */
+    public function setDistance($distance)
+    {
+        $this->distance = $distance;
     }
 
 }

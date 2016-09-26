@@ -37,12 +37,9 @@
                 {#<p>Schwarzman Building</p>#}
             {#</div>#}
         {#</div>#}
-        {{ block('events_features') }}
-        <div class="title" style="margin: 0 1em;">
-            <div class="sectionTitle">
-                <h4>What Else Is Happening</h4>
-            </div>
-        </div>
+        {% if features != null %}
+            {{ block('events_features') }}
+        {% endif %}
         {{ block('events_search_form') }}
         {{ block('events_results') }}
 
