@@ -60,12 +60,16 @@
                             </div>
                             <div class="extra-data">
                                 {% if item.access is defined %}
-                                    <span class="btn btn-default local-assets fa fa-wheelchair" title="Wheelchair accessible"></span>
+                                    <div class="btn-group">
+                                        {% if item.access == true %}
+                                            <button type="button" class="btn btn-default local-assets fa fa-wheelchair" title="Wheelchair accessible"></button>
+                                        {% endif %}
                                 {% endif %}
                                 {% if item.listening_device is defined %}
-                                    <span class="btn btn-default local-assets fa fa-assistive-listening-systems" title="Assitive listening device available"></span>
+                                    <button type="button" class="btn btn-default local-assets fa fa-assistive-listening-systems" title="Assitive listening device available"></button>
                                 {% endif %}
-                                <span class="btn btn-default local-assets fa fa-wifi" title="WiFi available"></span>
+                                <button type="button" class="btn btn-default local-assets fa fa-wifi" title="WiFi available"></button>
+                                    </div>
                             </div>
                             <div class="label small center-block bottom {{ item.target_audience | replace(' ', '-') | lower }}">
                                 {{ item.target_audience }}
@@ -133,21 +137,23 @@
             </table>
         </div>
         <div class="text-center">
+            {% set page = pages.page %}
+            {% if pages.page == 0 %}{% set page = pages.page + 1 %}{% endif %}
             {% if pages.total != 0 %}
             <nav aria-label="Page navigation">
                 <ul class="pagination">
-                    <li{% if pages.page == 0 %} class="disabled"{% endif %}>
-                        <a href="#" aria-label="Previous">
+                    <li{% if page == 1 %} class="disabled"{% endif %}>
+                        <a href="/{{ page-1 }}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                     {% for i in 1..pages.total %}
                         {% if i < 10 %}
-                            <li {% if pages.page == i-1 %}class="active"{% endif %}><a href="#">{{ i }}</a></li>
+                            <li {% if page == i %}class="active"{% endif %}><a href="/{{ i }}">{{ i }}</a></li>
                         {% endif %}
                     {% endfor %}
                     <li>
-                        <a href="#" aria-label="Next">
+                        <a href="/{{ page+1 }}" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>

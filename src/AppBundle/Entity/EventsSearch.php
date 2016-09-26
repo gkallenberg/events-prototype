@@ -46,7 +46,7 @@ class EventsSearch
     /**
      * @var string
      */
-    public $distance = '.5';
+    public $distance = '1.5';
 
     public function __construct()
     {

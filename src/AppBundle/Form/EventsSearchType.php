@@ -58,7 +58,7 @@ class EventsSearchType extends AbstractType
                 'choices' => [
                     'For Everyone' => 'all',
                     'Adults' => 'Adult',
-                    'Kids & Families' => 'Children',
+                    'Children' => 'Children',
                     'Teens/Young Adults' => 'Young Adult',
                 ]
             ])

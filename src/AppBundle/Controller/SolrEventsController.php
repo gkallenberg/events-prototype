@@ -25,14 +25,18 @@ class SolrEventsController extends Controller
 
     /**
      * @return \Symfony\Component\HttpFoundation\Response
-     * @Route("/", name="homepage")
+     * Matches /*
+     * @Route("/{page}", name="homepage", requirements={"page": "\d+"})
      */
-    public function indexAction()
+    public function indexAction($page = 0)
     {
         /**
          * @var EventsSearch
          */
         $eventSearch = new EventsSearch();
+        if (isset($page)) {
+            $eventSearch->setStart($page * $eventSearch->rows);
+        }
 
         $form = $this->createForm(EventsSearchType::class, $eventSearch);
 
@@ -101,7 +105,8 @@ class SolrEventsController extends Controller
         if ($eventSearch->nearby) {
             array_push($fq, '{!geofilt sfield=geo}');
         }
-        $myPos = '40.7528919,-73.9815126';
+        $myPos = '40.7532,-73.9822';
+//        $myPos = '40.7347,-73.999';
         $distance = $eventSearch->distance;
         $start = $eventSearch->start;
         $rows = $eventSearch->rows;
@@ -142,7 +147,10 @@ class SolrEventsController extends Controller
         if ($response->getStatusCode() == '200') {
             $list = json_decode($response->getBody(), true);
             $total = $list['response']['numFound'];
-            $pages = ['page' => $start, 'total' => floor($total / $rows)];
+            $pages = [
+                'page' => ($start > 0) ? $start / $rows : $start,
+                'total' => floor($total / $rows)
+            ];
             if ($total > 0) {
                 foreach ($facetFields as $facetField) {
                     $facets = $list['facet_counts']['facet_fields'][$facetField];
