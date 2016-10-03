@@ -71,8 +71,7 @@ swiftmailer:
 guzzle:
   clients:
     solr:
-#      base_url: "https://solr.prod.aws.nypl.org"
-      base_url: "https://localhost:8984"
+      base_url: %solr_base_url%
       headers:
         Accept: "application/json"
 #      options:
@@ -81,7 +80,21 @@ guzzle:
         verify: false
 
     refinery:
-      base_url: "https://refinery.nypl.org"
-#      base_url: "http://refinery.tld"
+      base_url: %refinery_host%
       headers:
         Accept: "application/json"
+
+# Solarium
+nelmio_solarium:
+  default_client: local
+  endpoints:
+    local:
+      scheme: https
+      host: localhost
+      port: 8984
+      path: /solr
+      core: events
+      timeout: 5
+  clients:
+    local:
+      endpoints: [local]

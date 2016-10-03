@@ -1,0 +1,26 @@
+{# app/Resources/views/events/list.html.twig #}
+
+{% extends "index.html.twig" %}
+
+{% use "page/events/features.html.twig" %}
+{% use "page/events/form.html.twig" %}
+{% use "page/events/results.html.twig" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block main %}
+    <div id="main">
+        <div class="title">
+            <div class="sectionTitle">
+                {{ page_title }}
+            </div>
+        </div>
+        {% if features != null %}
+            {{ block('events_features') }}
+        {% endif %}
+        {{ block('events_search_form') }}
+        {% if docs is defined %}
+            {{ block('events_results') }}
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{# app/Resources/views/events/features.html.twig #}
+
+{% block events_features %}
+    <div class="features">
+        <div class="row">
+            {% if features != null %}
+                {% for feature in features %}
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="thumbnail">
+                            <a href="#">
+                                <img style="padding-right: 10px;" src="{{ attribute(feature.attributes, 'image-uri') }}" alt=""/>
+                            </a>
+                            <div class="caption">
+                                <a href="{{ feature.attributes.url }}">
+                                    <div class="media-heading">{{ feature.attributes.title.en.text }}</div>
+                                </a>
+                                <p>
+                                    <span class="text-uppercase">{{ feature.attributes.date.en.text }}</span>
+                                    <br/>
+                                    {{ feature.attributes.location }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="title" style="margin: 0 1em;">
+        <div class="sectionTitle">
+            <h4>What Else Is Happening</h4>
+        </div>
+    </div>
+{% endblock %}

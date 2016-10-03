@@ -17,3 +17,13 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    # Solr related configurations
+    solr_base_url: https://localhost:8984
+    solr_host: localhost
+    solr_port: 8984
+    solr_user: www
+    solr_pass:
+
+    # Refinery configuration for pulling NDOs and doing searches
+    refinery_host: https://refinery.nypl.org

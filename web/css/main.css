@@ -1,5 +1,7 @@
 #main {
     padding: 0 20px;
+    height: auto;
+    min-height: 500px;
 }
 
 .features {
@@ -24,4 +26,12 @@ svg:not(:root) {
 .thumbnail img {
     padding-top: 15px;
     display: block;
+}
+
+.beta-text {
+    text-transform: uppercase;
+}
+
+#main .title {
+    margin: 1em;
 }

@@ -3,9 +3,6 @@
 {% use "page/left.html.twig" %}
 {% use "page/right.html.twig" %}
 {% use "page/footer.html.twig" %}
-{% use "events/form.html.twig" %}
-{% use "events/results.html.twig" %}
-{% use "events/features.html.twig" %}
 
 {% extends "base.html.twig" %}
 
@@ -20,30 +17,13 @@
     {{ block('right') }}
 
     {% block main %}
-    <div id="main">
-        <div class="title" style="margin: 1em;">
-            <div class="sectionTitle">
-                {{ page_title }}
+        <div id="main">
+            <div class="title">
+                <div class="sectionTitle">
+                    {{ page_title }}
+                </div>
             </div>
         </div>
-        {#<div class="container" style="margin-bottom: 10px;">#}
-            {#<div class="col-lg-4">#}
-                {#<a class="link" href="https://www.nypl.org/events/programs/2016/09/20/nicholson-baker?nref=56896">#}
-                {#<img width="272" height="170" align="right" src="https://d2720ur5668dri.cloudfront.net/sites/default/files/styles/extralarge/public/Nicholson%20Baker_CREDIT_Jerry%20Bauer.JPG?itok=DouvskKL" alt="Nicholson Baker"/></a>#}
-            {#</div>#}
-            {#<div class="col-lg-4">#}
-                {#<p>LIVE from the NYPL: Nicholson Baker | Katherine Lanpher</p>#}
-                {#<p>Tue, Sep 20 | 7 pm</p>#}
-                {#<p>Schwarzman Building</p>#}
-            {#</div>#}
-        {#</div>#}
-        {% if features != null %}
-            {{ block('events_features') }}
-        {% endif %}
-        {{ block('events_search_form') }}
-        {{ block('events_results') }}
-
-    </div>
     {% endblock %}
 
     {{ block('footer') }}

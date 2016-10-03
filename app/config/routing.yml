@@ -4,4 +4,4 @@ app:
 
 events_list:
   path:       "/"
-  defaults:   { _controller: AppBundle:SolrEvents:index }
+  defaults:   { _controller: AppBundle:Events:index }
